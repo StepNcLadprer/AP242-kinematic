@@ -1,0 +1,46 @@
+<machine name="irb6640" description="ABB IRB6640 Robot Arm" 
+  algorithm="robot" >
+
+<default file="ABB_IRB6640.stp" />
+
+<geometry shape_eid="58" />
+
+<chain target="tool" >
+
+  <axis name="a*" min="-360" max="360" >
+    <geometry shape_eid="56" rotation_axis="105208"/>
+    <geometry shape_eid="57"/>
+    <geometry shape_eid="55"/>
+  </axis>
+
+  <axis name="b*" min="-360" max="360" dir_reverse="true">
+    <geometry shape_eid="59" rotation_axis="101794"/>
+  </axis>
+
+
+  <axis name="c*" min="-360" max="360" dir_reverse="true">
+    <geometry shape_eid="61" rotation_axis="98716"/>
+  </axis>
+
+
+  <axis name="d*" min="-360" max="360" dir_reverse="true" >
+    <geometry shape_eid="60" rotation_axis="100019" />
+  </axis>
+
+  <axis name="e*" min="-360" max="360" >
+    <geometry shape_eid="63" rotation_axis="96367" />
+    <geometry shape_eid="62" rotation_axis="96367" />
+  </axis>
+
+  <placement shape_eid="62" axis_face_eid="97113" reversed="true">
+    <location component="zy" shape_eid="62" face_eid="97113" />
+    <location component="x" shape_eid="63" face_eid="96985"  />
+  </placement>
+
+</chain>
+
+<chain target="workpiece" >
+  <placement location="1000 1000 0" />
+</chain>
+
+</machine>

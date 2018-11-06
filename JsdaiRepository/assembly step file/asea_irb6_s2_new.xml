@@ -1,0 +1,62 @@
+<machine name="ASEA IRb6 s2 M" description="ASEA IRb6 S2 M" 
+  algorithm="robot" >
+
+<default file="asea_irb6_s2_new.stp" />
+
+
+<geometry shape_eid="1044" />
+
+
+<chain target="tool" >
+
+  <axis name="a*" min="-360" max="360" dir_reverse="true">
+    <geometry shape_eid="7001" rotation_axis="4252"/>
+    
+
+    
+  </axis>
+
+  <axis name="b*" min="-360" max="360" >
+    <geometry shape_eid="9833" rotation_axis="8798"/>
+    
+  </axis>
+
+
+  <axis name="c*" min="-360" max="360" >
+    <geometry shape_eid="19469" rotation_axis="15687"/>
+    
+
+  </axis>
+
+
+  <axis name="d*" min="-360" max="360" >
+    <geometry shape_eid="20437" rotation_axis="20400" />
+
+             
+  </axis>
+
+ <axis name="e*" min="-360" max="360" >
+     <geometry shape_eid="20123" rotation_axis="20103" />
+     
+     <geometry shape_eid="28884" />
+     <geometry shape_eid="32147" />
+     <geometry shape_eid="32890" />
+     <geometry shape_eid="33803" />
+     <geometry shape_eid="34863" />
+     
+       
+  </axis>
+
+        
+<placement shape_eid="34863" axis_face_eid="34791" reversed="true">
+    <location component="xy" shape_eid="34863" face_eid="34791"/>
+    <location component="z" shape_eid="34863" face_eid="34489" />
+  </placement>
+
+</chain>
+
+<chain target="workpiece" >
+  <placement location="600 0 500" />
+</chain>
+
+</machine>

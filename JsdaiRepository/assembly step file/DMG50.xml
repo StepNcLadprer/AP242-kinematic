@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<machine algorithm="BCNutating" description="DMG50 User-Created Model" name="DMG50">
+  <default file="DMG50.stp"/>
+  <placement axis="0 1 0" ref_direction="-1 0 0"/>
+  <geometry shape_eid="67"/>
+  <geometry shape_eid="68"/>
+  <geometry shape_eid="69"/>
+  <geometry shape_eid="70"/>
+  <chain target="tool">
+    <axis max="500.0" min="-500.0" name="x">
+      <geometry shape_eid="75"/>
+    </axis>
+    <axis max="400.0" min="-400.0" name="y">
+      <geometry shape_eid="74"/>
+    </axis>
+    <axis max="300.0" min="-300.0" name="z">
+      <geometry shape_eid="71"/>
+    </axis>
+    <placement inverse="true">
+      <location component="xyz" face_eid="857" shape_eid="71"/>
+    </placement>
+  </chain>
+  <chain target="workpiece">
+    <axis max="19.999999999999993" min="-139.99999999999997" name="b*">
+      <geometry rotation_axis="848" shape_eid="72"/>
+    </axis>
+    <axis name="c">
+      <geometry rotation_axis="846" shape_eid="73"/>
+    </axis>
+    <placement inverse="true">
+      <location component="xyz" face_eid="845" shape_eid="73"/>
+    </placement>
+  </chain>
+</machine>
