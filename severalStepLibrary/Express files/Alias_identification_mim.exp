@@ -1,0 +1,16 @@
+(*
+Part1000: $Id: $
+ STEPmod.CVS.Id: mim.exp,v 1.18 2010/06/09 22:20:55 philsp Exp
+ISO TC184/SC4/WG12 N7102 - ISO/TS 10303-1025 Alias identification - EXPRESS MIM
+Supersedes ISO TC184/SC4/WG12 N5276
+*)
+
+SCHEMA Alias_identification_mim;
+
+USE FROM Identification_assignment_mim;    -- ISO/TS 10303-1021
+
+
+TYPE aliasable_item = EXTENSIBLE GENERIC_ENTITY SELECT BASED_ON identification_item;
+END_TYPE; 
+
+END_SCHEMA;  -- Alias_identification_mim

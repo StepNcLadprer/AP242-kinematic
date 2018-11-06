@@ -1,0 +1,75 @@
+(*
+ Part1000: $Id: $
+ STEPmod.CVS.Id: arm.exp,v 1.6 2012/10/11 05:49:24 liutkuviene Exp
+ ISO TC184/SC4/WG12 N7819 - ISO/TS 10303-1791 Primitive solids - EXPRESS ARM
+ Supersedes ISO TC184/SC4/WG12 N6917
+*)
+
+
+SCHEMA Primitive_solids_arm;
+
+USE FROM Basic_geometry_arm;   -- ISO/TS 10303-1652
+
+ENTITY Circular_cone
+   SUBTYPE OF (Detailed_geometric_model_element);
+   axis_direction : Direction;
+   axis_point : Cartesian_point;
+   height     : length_measure;
+   radius     : length_measure;
+   semi_angle : plane_angle_measure;
+ WHERE
+   WR1: radius >= 0.0;
+   WR2 : height > 0.0;
+ END_ENTITY;
+
+ ENTITY Circular_cylinder
+   SUBTYPE OF (Detailed_geometric_model_element);
+   axis_direction : Direction;
+   axis_point : Cartesian_point;
+   height     : length_measure;
+   radius     : length_measure;
+  WHERE
+   WR1: radius > 0.0;
+   WR2: height > 0.0; 
+ END_ENTITY;
+
+ ENTITY Sphere
+   SUBTYPE OF (Detailed_geometric_model_element);
+   radius : length_measure;
+   centre : Cartesian_point;
+ WHERE
+    WR1: radius > 0.0;
+ END_ENTITY;
+
+ENTITY Rectangular_block
+   SUBTYPE OF (Detailed_geometric_model_element);
+   corner_location : Axis_placement_3d;
+   xlength   : length_measure;
+   width     : length_measure;
+   height    : length_measure;
+ WHERE
+    WR1: xlength > 0.0;
+    WR2: width > 0.0;
+    WR3: height > 0.0;
+ END_ENTITY;
+ 
+ENTITY Torus
+   SUBTYPE OF (Detailed_geometric_model_element);
+   axis_direction : Direction;
+   axis_point : Cartesian_point;
+   radius       : length_measure;
+   minor_radius : length_measure;
+ WHERE
+   WR1: radius > minor_radius;
+   WR2: minor_radius > 0.0;
+ END_ENTITY;
+
+SUBTYPE_CONSTRAINT ps_detailed_geometric_model_element_subtypes FOR Detailed_geometric_model_element;
+  ONEOF (Circular_cone,
+         Circular_cylinder,
+         Sphere,
+         Rectangular_block,
+         Torus);
+END_SUBTYPE_CONSTRAINT;
+
+END_SCHEMA; -- Primitive_solids_arm

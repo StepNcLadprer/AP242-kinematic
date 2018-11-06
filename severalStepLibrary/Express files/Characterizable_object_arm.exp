@@ -1,0 +1,17 @@
+(*
+   Part1000: $Id: $
+ STEPmod.CVS.Id: arm.exp,v 1.8 2009/12/21 15:19:48 liutkuviene Exp
+   ISO TC184/SC4/WG12 N6884 - ISO/TS 10303-1765 Characterizable object - EXPRESS ARM
+   Supersedes ISO TC184/SC4/WG12 N4296
+*)
+
+SCHEMA Characterizable_object_arm;
+
+USE FROM Support_resource_arm;
+
+ENTITY Characterizable_object;
+  name : label;
+  description : OPTIONAL text;
+END_ENTITY;
+
+END_SCHEMA;

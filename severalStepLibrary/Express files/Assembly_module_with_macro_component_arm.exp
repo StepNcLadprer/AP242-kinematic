@@ -1,0 +1,42 @@
+(*
+   Part1000: $Id: $
+ STEPmod.CVS.Id: arm.exp,v 1.20 2012/10/11 05:49:13 liutkuviene Exp
+   ISO TC184/SC4/WG12 N8101 - ISO/TS 10303-1640 Assembly module with macro component - EXPRESS ARM
+   Supersedes ISO TC184/SC4/WG12 N7508
+*)
+
+SCHEMA Assembly_module_with_macro_component_arm;
+	USE FROM Assembly_module_macro_definition_arm;	-- ISO/TS 10303-1637
+	USE FROM Assembly_module_with_subassembly_arm;	-- ISO/TS 10303-1641
+
+  ENTITY Assembly_module_macro_component
+    SUBTYPE OF (Physical_component, Single_instance);
+      SELF\Definition_based_product_occurrence.derived_from : Assembly_module_design_view;
+    INVERSE
+      join_access_mechanisms : SET[1:?] OF assembly_module_macro_component_join_terminal FOR associated_component;
+    WHERE
+      WR1 : SIZEOF(QUERY(ammcjt <* join_access_mechanisms | ammcjt\Component_feature.definition\Shape_element.containing_shape :<>: SELF\Definition_based_product_occurrence.derived_from\Part_design_view.usage_view)) = 0;
+      WR2 : NOT EXISTS(SELF\Product_view_definition.additional_characterization);
+  END_ENTITY;
+
+  ENTITY Assembly_module_macro_component_join_terminal
+    SUBTYPE OF (Physical_component_terminal);
+      SELF\Component_feature.definition           : Assembly_module_macro_terminal;
+      SELF\Component_feature.associated_component : Assembly_module_macro_component;
+  END_ENTITY;
+  
+
+
+ENTITY Assembly_module_macro_terminal
+  SUBTYPE OF (Assembly_module_terminal);
+INVERSE
+  defining_terminal : Component_feature_to_physical_usage_view_assignment FOR defined_part_feature;
+WHERE
+  WR1: 'LAYERED_INTERCONNECT_MODULE_DESIGN_ARM.INTERCONNECT_MODULE_MACRO_TERMINAL' IN TYPEOF(defining_terminal\Component_feature_to_physical_usage_view_assignment.assigned_design_object);
+  WR2: 'ASSEMBLY_MODULE_MACRO_DEFINITION_ARM.' + 'COMPONENT_TERMINAL_TO_ASSEMBLY_MODULE_MACRO_TERMINAL_ASSIGNMENT' IN TYPEOF(defining_terminal);
+  WR3: NOT (SIZEOF(USEDIN(SELF, '')) > 1) OR (SIZEOF(QUERY(ct <* USEDIN(SELF, '') | NOT ('ASSEMBLY_MODULE_WITH_MACRO_COMPONENT_ARM.ASSEMBLY_MODULE_MACRO_COMPONENT_JOIN_TERMINAL' IN TYPEOF(ct)))) = 1);
+END_ENTITY;
+
+  
+
+END_SCHEMA;

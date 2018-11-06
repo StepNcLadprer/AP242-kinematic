@@ -1,0 +1,19 @@
+(*
+  Part1000: $Id: $
+ STEPmod.CVS.Id: mim.exp,v 1.5 2012/10/11 05:49:24 liutkuviene Exp
+  ISO TC184/SC4/WG12 N7820 - ISO/TS 10303-1791 Primitive solids - EXPRESS MIM
+  Supersedes ISO TC184/SC4/WG12 N6918
+*)
+
+SCHEMA Primitive_solids_mim;
+
+USE FROM Basic_geometry_mim; -- ISO/TS 10303-1652
+
+USE FROM geometric_model_schema -- ISO 10303-42
+             (block,
+              right_circular_cone,
+              right_circular_cylinder,
+              sphere,
+              torus);
+
+END_SCHEMA;

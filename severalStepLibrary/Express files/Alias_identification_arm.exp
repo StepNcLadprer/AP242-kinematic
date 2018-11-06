@@ -1,0 +1,23 @@
+(*
+   Part1000: $Id: $
+ STEPmod.CVS.Id: arm.exp,v 1.18 2008/09/12 10:23:46 liutkuviene Exp
+   ISO TC184/SC4/WG12 N5275 - ISO/TS 10303-1025 Alias identification - EXPRESS ARM
+   Supersedes ISO TC184/SC4/WG12 N4837
+*)
+
+SCHEMA Alias_identification_arm;
+
+USE FROM Identification_assignment_arm;
+
+  TYPE alias_identification_item = EXTENSIBLE GENERIC_ENTITY SELECT BASED_ON identification_item;
+  END_TYPE;
+
+  ENTITY Alias_identification
+    SUBTYPE OF (Identification_assignment);
+      SELF\Identification_assignment.items : SET [1:?] OF alias_identification_item;
+    DERIVE
+      SELF\Identification_assignment.role : STRING := 'alias';
+  END_ENTITY;
+
+END_SCHEMA;
+

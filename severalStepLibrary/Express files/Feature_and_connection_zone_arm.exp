@@ -1,0 +1,48 @@
+(*
+   Part1000: $Id: $
+ STEPmod.CVS.Id: arm.exp,v 1.40 2012/10/11 05:49:23 liutkuviene Exp
+   ISO TC184/SC4/WG12 N8017 - ISO/TS 10303-1671 Feature and connection zone - EXPRESS ARM
+   Supersedes ISO TC184/SC4/WG12 N7442
+*)
+
+SCHEMA Feature_and_connection_zone_arm; 
+
+	USE FROM Shape_feature_arm; 
+	USE FROM Surface_conditions_arm;
+    REFERENCE FROM Support_resource_arm(bag_to_set); 
+
+ENTITY Connection_zone
+  SUBTYPE OF (Shape_element);
+INVERSE
+  surface_conditions : SET OF Surface_condition FOR described_element; 		
+WHERE
+  WR1 : NOT EXISTS (SELF\Shape_element.description);
+  WR2 : NOT EXISTS (SELF\Shape_element.element_name);
+END_ENTITY;
+
+ENTITY Definitional_shape_element
+  ABSTRACT SUPERTYPE
+  SUBTYPE OF (Shape_element);
+  connection_area : OPTIONAL SET[1:?] OF Connection_zone;
+INVERSE
+  surface_conditions : SET OF Surface_condition FOR described_element; 		
+UNIQUE
+  UR1 : SELF\Shape_element.element_name, 
+        SELF\shape_element.containing_shape;
+END_ENTITY;
+
+ENTITY Feature_definition_with_connection_area
+  SUBTYPE OF (Shape_feature_definition);
+  connection_area : OPTIONAL SET [1:?] OF Connection_zone;
+END_ENTITY;
+
+ENTITY Non_definitional_shape_element 	 
+  SUBTYPE OF (Shape_element); 	 
+END_ENTITY;
+
+SUBTYPE_CONSTRAINT fac_shape_element FOR Shape_element;
+  ONEOF (Instanced_feature, Placed_feature) ANDOR
+  ONEOF (Definitional_shape_element, Non_definitional_shape_element);
+END_SUBTYPE_CONSTRAINT;
+
+END_SCHEMA;

@@ -1,0 +1,77 @@
+(*
+   Part1000: $Id: $
+ STEPmod.CVS.Id: arm.exp,v 1.18 2012/10/11 05:49:06 liutkuviene Exp
+   ISO TC184/SC4/WG12 N7975 - ISO/TS 10303-1027 Contextual shape positioning - EXPRESS ARM
+   Supersedes ISO TC184/SC4/WG12 N7412
+*) 
+
+SCHEMA Contextual_shape_positioning_arm;
+
+USE FROM Geometric_model_relationship_arm;
+USE FROM Shape_property_assignment_arm;    --  ISO/TS 10303-1032
+
+
+  TYPE template_instance = SELECT
+    (Geometric_placement_operation, 
+     Geometric_model_relationship_with_transformation);
+  END_TYPE; 
+
+  ENTITY Contextual_shape_representation;
+      contextual_shape          : Contextual_item_shape;
+      representing_relationship : Geometric_model_relationship;
+    DERIVE
+      context_representation    : geometric_representation_select := representing_relationship.rep_2 ;
+      positioned_representation : geometric_representation_select := representing_relationship.rep_1 ;
+  END_ENTITY;
+
+  ENTITY Geometric_composition_with_operator_transformation
+    SUBTYPE OF (Geometric_relationship_with_operator_transformation,
+      Definitional_representation_relationship);
+  END_ENTITY;
+
+  ENTITY Geometric_composition_with_placement_transformation
+    SUBTYPE OF (Geometric_relationship_with_placement_transformation,
+      Definitional_representation_relationship);
+  END_ENTITY; 
+
+  ENTITY Geometric_placement_model
+    SUBTYPE OF (Geometric_model);
+      SELF\Representation.items : SET[1:1] OF Geometric_placement_operation;
+  END_ENTITY;
+
+  ENTITY Geometric_model_relationship_with_transformation
+    ABSTRACT SUPERTYPE OF (ONEOF (Geometric_relationship_with_placement_transformation,
+      Geometric_relationship_with_operator_transformation))
+    SUBTYPE OF (Geometric_model_relationship);
+    WHERE  
+      WR1: rep_1.context_of_items :<>: rep_2.context_of_items;
+  END_ENTITY;
+
+  ENTITY Geometric_relationship_with_operator_transformation
+    SUBTYPE OF (Geometric_model_relationship_with_transformation);
+      transformation: cartesian_transformation;
+    WHERE
+      WR1:  rep_1.context_of_items\Geometric_coordinate_space.dimension_count :=:
+        rep_2.context_of_items\Geometric_coordinate_space.dimension_count;
+  END_ENTITY;
+
+  ENTITY Geometric_relationship_with_placement_transformation
+    SUBTYPE OF (Geometric_model_relationship_with_transformation);
+      transformation: Axis_placement_mapping;
+    WHERE
+      WR1:  rep_1.context_of_items\Geometric_coordinate_space.dimension_count :=:
+        rep_2.context_of_items\Geometric_coordinate_space.dimension_count;
+  END_ENTITY;
+
+  ENTITY Shape_placement_association
+    SUBTYPE OF (Shape_description_association);
+      SELF\Shape_description_association.used_representation : Geometric_placement_model;
+      SELF\Shape_description_association.definition : Associated_contextual_item_shape;
+  END_ENTITY;
+  
+  ENTITY Associated_contextual_item_shape
+    SUBTYPE OF (Associated_item_shape, Contextual_item_shape);
+  END_ENTITY;
+
+END_SCHEMA;
+

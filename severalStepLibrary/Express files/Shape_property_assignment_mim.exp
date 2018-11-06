@@ -1,0 +1,60 @@
+(*
+	Part1000: $Id: $
+ STEPmod.CVS.Id: mim.exp,v 1.32 2012/10/11 05:49:03 liutkuviene Exp
+	ISO TC184/SC4/WG12 N8051 - ISO/TS 10303-1032 Shape property assignment - EXPRESS MIM
+	Supersedes ISO TC184/SC4/WG12 N7467
+*)
+
+
+SCHEMA Shape_property_assignment_mim;
+
+USE FROM Property_assignment_mim;
+(*REFERENCE FROM*) USE FROM Assembly_structure_mim; -- ISO/TS 10303-1026
+
+(*REFERENCE FROM*) USE FROM External_model_mim; -- ISO/TS 10303-1033
+
+USE FROM Geometric_model_relationship_mim; -- ISO/TS 10303-1403 
+USE FROM Product_view_definition_relationship_mim; -- ISO/TS 10303-1041
+
+USE FROM basic_attribute_schema   -- ISO 10303-41
+  (id_attribute); 
+
+USE FROM product_property_definition_schema   -- ISO 10303-41
+  (characterized_product_definition,
+   product_definition_shape,
+   shape_aspect,
+   shape_aspect_relationship); 
+
+USE FROM product_property_representation_schema   -- ISO 10303-41
+  (item_identified_representation_usage,
+   chain_based_item_identified_representation_usage,
+   shape_definition_representation); 
+
+TYPE geometric_model_item = EXTENSIBLE GENERIC_ENTITY SELECT (
+    geometric_representation_item);
+END_TYPE; 
+
+TYPE geometric_item_specific_usage_select = SELECT
+   (shape_aspect,
+    shape_aspect_relationship);
+END_TYPE; 
+
+TYPE shape_model = EXTENSIBLE GENERIC_ENTITY SELECT 
+   (shape_representation);
+END_TYPE;   
+
+ENTITY geometric_item_specific_usage
+  SUBTYPE OF(item_identified_representation_usage);
+    SELF\item_identified_representation_usage.definition          : geometric_item_specific_usage_select;
+    SELF\item_identified_representation_usage.used_representation : shape_model;
+    SELF\item_identified_representation_usage.identified_item     : geometric_model_item;
+  UNIQUE
+   UR1 : definition;
+END_ENTITY;
+
+ENTITY chain_based_geometric_item_specific_usage
+  SUBTYPE OF (geometric_item_specific_usage, 
+    chain_based_item_identified_representation_usage);
+END_ENTITY;
+
+END_SCHEMA; 

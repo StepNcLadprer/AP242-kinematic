@@ -1,0 +1,79 @@
+(*
+   Part1000: $Id: $
+ STEPmod.CVS.Id: arm.exp,v 1.11 2012/10/11 05:49:05 liutkuviene Exp
+   ISO TC184/SC4/WG12 N7921 - ISO/CD-TS - 10303-1816 Model based 3d geometrical dimensioning and tolerancing representation - EXPRESS ARM
+   Supersedes ISO TC184/SC4/WG12 N7358
+*)
+
+SCHEMA Model_based_3d_geometrical_dimensioning_and_tolerancing_representation_arm;
+
+USE FROM Geometric_tolerance_arm; -- ISO/TS 10303-1051
+USE FROM Part_shape_arm;
+USE FROM Product_and_manufacturing_information_with_nominal_3d_models_arm;
+
+TYPE nominal_3d_integral_feature_geometry = SELECT (
+  Advanced_face, 
+  Edge_curve,
+  Vertex_point, 
+  Connected_face_set,
+  Edge_loop);
+END_TYPE;
+
+TYPE nominal_3d_derived_feature_geometry = SELECT (
+  Curve,
+  Point,
+  Surface);
+END_TYPE;
+
+TYPE mb3gdtsr_geometric_tolerance_target = SELECT BASED_ON geometric_tolerance_target WITH (
+  Nominal_3d_feature);
+END_TYPE;
+
+TYPE mb3gdtsr_dimension_target = SELECT BASED_ON dimension_target WITH (
+  Nominal_3d_feature, Datum_reference_compartment);
+END_TYPE;
+
+TYPE mb3gdtsr_edge_of_undefined_shape_size_element = SELECT 
+  BASED_ON edge_of_undefined_shape_size_element WITH (
+  Nominal_3D_edge);  
+END_TYPE;
+
+ENTITY Gdt_representation_shape
+  SUBTYPE OF (Nominal_3d_model_shape, Part_shape);
+WHERE
+  WR1: 'PRODUCT_AND_MANUFACTURING_INFORMATION_VIEW_CONTEXT_ARM.GDT_REPRESENTATION_VIEW_CONTEXT' IN TYPEOF(described_element\Product_view_definition.additional_contexts); 
+END_ENTITY;  
+  
+ENTITY Nominal_3d_edge
+  SUBTYPE OF (Nominal_3d_integral_feature);
+DERIVE
+  SELF\Associated_shape_element.associated_item : Edge_curve := association\Geometric_item_specific_usage.identified_item;
+WHERE
+  WR1: 'BASIC_GEOMETRIC_TOPOLOGY_ARM.EDGE_CURVE' IN
+     TYPEOF(SELF\Associated_shape_element.associated_item);
+END_ENTITY;
+
+ENTITY Nominal_3d_feature 
+  ABSTRACT SUPERTYPE OF (ONEOF (Nominal_3d_integral_feature, Nominal_3d_derived_feature))
+  SUBTYPE OF (Associated_shape_element, Part_shape_element);
+  SELF\Shape_element.containing_shape : Gdt_representation_shape;
+END_ENTITY;
+
+ENTITY Nominal_3d_integral_feature
+  SUBTYPE OF (General_part_feature, Nominal_3d_feature);
+DERIVE
+  SELF\Associated_shape_element.associated_item : nominal_3d_integral_feature_geometry := association\Geometric_item_specific_usage.identified_item;
+WHERE
+  WR1: EXISTS(associated_item);
+END_ENTITY;    
+
+ENTITY Nominal_3d_derived_feature
+  SUBTYPE OF (Nominal_3d_feature, Derived_shape_element);
+  SELF\Derived_shape_element.derived_from: SET [1:?] OF Nominal_3d_feature;
+DERIVE
+  SELF\Associated_shape_element.associated_item : nominal_3d_derived_feature_geometry := association\Geometric_item_specific_usage.identified_item;
+WHERE
+  WR1: EXISTS(associated_item);
+END_ENTITY;   
+
+END_SCHEMA;

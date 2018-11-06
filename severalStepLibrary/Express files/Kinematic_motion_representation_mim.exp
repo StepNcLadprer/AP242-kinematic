@@ -1,0 +1,17 @@
+(*
+   Part1000: $Id: $
+ STEPmod.CVS.Id: mim.exp,v 1.5 2012/10/11 05:49:05 liutkuviene Exp
+   ISO TC184/SC4/WG12 N7904 - ISO/CD-TS - 10303-1796 Kinematic motion representation - EXPRESS MIM
+   Supersedes ISO TC184/SC4/WG12 N7341
+*)
+
+SCHEMA Kinematic_motion_representation_mim;
+
+USE FROM Kinematic_state_mim;
+USE FROM B_spline_geometry_mim; --  ISO/TS 10303-1801
+USE FROM Geometric_model_relationship_mim; -- ISO/TS 10303-1403
+USE FROM Parametric_representation_mim;
+USE FROM Contextual_shape_positioning_mim; -- ISO/TS 10303-1027
+USE FROM kinematic_motion_representation_schema;
+
+END_SCHEMA;

@@ -1,0 +1,179 @@
+(* 
+	Part1000: $Id: $
+ STEPmod.CVS.Id: arm.exp,v 1.51 2012/10/11 05:49:03 liutkuviene Exp
+	ISO TC184/SC4/WG12 N8050 - ISO/TS 10303-1032 Shape property assignment - EXPRESS ARM
+	Supersedes ISO TC184/SC4/WG12 N7466
+*)
+
+
+SCHEMA Shape_property_assignment_arm; 
+
+USE FROM Property_assignment_arm;
+(*REFERENCE FROM*) USE FROM Assembly_structure_arm; -- ISO/TS 10303-1026
+
+(*REFERENCE FROM*) USE FROM External_model_arm; -- ISO/TS 10303-1033
+
+USE FROM Geometric_model_relationship_arm; -- ISO/TS 10303-1403 
+USE FROM Product_view_definition_relationship_arm; -- ISO/TS 10303-1041
+
+TYPE spa_property_assignment_select = SELECT BASED_ON property_assignment_select WITH ( 
+  Item_shape,
+  Shape_element, 
+  Shape_element_relationship);
+END_TYPE; 
+
+TYPE chained_geometric_model_link = SELECT (
+    Geometric_placement_operation,
+    Geometric_coordinate_space,
+    Geometric_model_relationship);
+END_TYPE;
+
+TYPE described_element_select = SELECT (
+  View_definition_relationship,
+  Product_occurrence_definition_relationship);
+END_TYPE;  
+
+TYPE shape_element_or_relationship_select = SELECT (
+  Shape_element,
+  Shape_element_relationship);
+END_TYPE;  
+
+TYPE geometric_item_specific_usage_select = SELECT (
+  Shape_element, 
+  Shape_element_relationship);
+END_TYPE; 
+
+TYPE spa_represented_definition = EXTENSIBLE GENERIC_ENTITY SELECT BASED_ON represented_definition WITH (
+    Item_shape,
+    Shape_element,
+    Shape_element_relationship);
+END_TYPE;
+
+TYPE assigned_shape_property_select = EXTENSIBLE GENERIC_ENTITY SELECT (
+    Item_shape,
+    Shape_element,
+    Shape_element_relationship);
+END_TYPE;
+
+TYPE shape_model = EXTENSIBLE GENERIC_ENTITY SELECT
+  (External_geometric_model, 
+   Geometric_model);
+END_TYPE; 
+
+TYPE shapeable_item = EXTENSIBLE GENERIC_ENTITY SELECT
+  (Product_occurrence_definition_relationship, 
+   Product_view_definition, 
+   View_definition_relationship);
+END_TYPE; 
+
+ENTITY Associated_item_shape
+  SUBTYPE OF (Item_shape);
+DERIVE
+  associated_model : shape_model := association\Property_definition_representation.used_representation;
+INVERSE  
+  association : Shape_description_association FOR definition;
+END_ENTITY;  
+
+ENTITY Associated_shape_element 
+  SUBTYPE OF (Shape_element);
+  SELF\Shape_element.containing_shape : Associated_item_shape;
+DERIVE
+  associated_item : geometric_model_item := association\Geometric_item_specific_usage.identified_item;
+INVERSE 
+  association : Geometric_item_specific_usage FOR definition;
+WHERE
+  WR1: EXISTS(associated_item);
+  WR2: association\Geometric_item_specific_usage.used_model\Geometric_model.context_of_items = 
+  SELF\Shape_element.containing_shape\Associated_item_shape.association\Property_definition_representation.used_representation\Geometric_model.context_of_items;
+END_ENTITY;
+
+ENTITY Contextual_item_shape
+  SUBTYPE OF (Item_shape);
+    SELF\Item_shape.described_element : described_element_select;
+  DERIVE
+    shaped_product : Product_view_definition := spa_get_definition(SELF);
+END_ENTITY;
+
+ENTITY Geometric_item_specific_usage;
+    name            : STRING;
+    description     : OPTIONAL STRING;
+    definition      : geometric_item_specific_usage_select;
+    identified_item : geometric_model_item;
+    used_model      : shape_model;      
+END_ENTITY;
+
+ENTITY Chain_based_geometric_item_specific_usage
+    SUBTYPE OF (Geometric_item_specific_usage);
+    nodes : LIST [2:?] OF UNIQUE Geometric_model;
+    undirected_link : LIST [1:?] OF UNIQUE chained_geometric_model_link;
+END_ENTITY;
+
+ENTITY Item_shape;
+  id                : OPTIONAL STRING;
+  description       : OPTIONAL STRING;
+  described_element : shapeable_item;
+UNIQUE
+  UR1: described_element;
+END_ENTITY;
+
+ENTITY Assigned_shape_property
+  SUBTYPE OF (Assigned_property);
+  SELF\Assigned_property.described_element : assigned_shape_property_select;
+END_ENTITY; 
+
+ENTITY Shape_dependent_property_representation -- maps to property_def_rep
+  SUBTYPE OF (Property_definition_representation);
+  SELF\Property_definition_representation.definition : Assigned_shape_property;
+END_ENTITY;
+
+ENTITY Shape_description_association -- maps to shape_def_rep
+  SUBTYPE OF (Property_definition_representation);
+  SELF\Property_definition_representation.definition : Associated_item_shape;
+  SELF\Property_definition_representation.used_representation : shape_model;
+END_ENTITY;
+
+ENTITY Shape_element_description_association -- maps to shape_def_rep
+  SUBTYPE OF (Property_definition_representation);
+  SELF\Property_definition_representation.definition : shape_element_or_relationship_select;
+  SELF\Property_definition_representation.used_representation : shape_model;
+END_ENTITY;
+
+ENTITY Shape_element;
+    id               : OPTIONAL STRING;
+    element_name     : STRING;
+    description      : OPTIONAL STRING;
+    containing_shape : Item_shape;
+UNIQUE
+    UR1: id, containing_shape;    
+WHERE
+    WR1: EXISTS(element_name) OR (TYPEOF(SELF\Shape_element) <> TYPEOF(SELF));
+END_ENTITY;
+
+ENTITY Shape_element_relationship;
+    relation_type : OPTIONAL STRING;
+    description   : OPTIONAL STRING;
+    relating      : Shape_element;
+    related       : Shape_element;
+  WHERE
+    WR1: EXISTS(relation_type) OR (TYPEOF(SELF\Shape_element_relationship) <> TYPEOF(SELF));
+END_ENTITY;
+
+SUBTYPE_CONSTRAINT property_definition_representation_subtype FOR Property_definition_representation;
+  ONEOF (Shape_description_association, Shape_dependent_property_representation, Shape_element_description_association);
+END_SUBTYPE_CONSTRAINT;
+
+FUNCTION spa_get_definition ( input : Contextual_item_shape ): Product_view_definition;
+  IF ('PRODUCT_VIEW_DEFINITION_RELATIONSHIP_ARM.VIEW_DEFINITION_USAGE'
+    IN TYPEOF(input\Item_shape.described_element))
+    THEN
+      RETURN(input\Item_shape.described_element\View_definition_relationship.related_view);
+  END_IF;
+  IF ('ASSEMBLY_STRUCTURE_ARM.PRODUCT_OCCURRENCE_DEFINITION_RELATIONSHIP' IN
+      TYPEOF(input\Item_shape.described_element))
+    THEN
+      RETURN(input\Item_shape.described_element\Product_occurrence_definition_relationship.related_view);
+  END_IF;    
+  RETURN(?);
+END_FUNCTION;
+
+END_SCHEMA;  

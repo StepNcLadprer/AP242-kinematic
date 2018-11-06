@@ -1,0 +1,32 @@
+(*
+   Part1000: $Id: $
+ STEPmod.CVS.Id: arm.exp,v 1.11 2012/10/11 18:59:22 thomasrthurman Exp
+   ISO TC184/SC4/WG12 N7990 - ISO/TS 10303-1362 Dimension and tolerance callouts - EXPRESS ARM
+   Supersedes ISO TC184/SC4/WG12 N5350
+*)
+
+SCHEMA Dimension_and_tolerance_callouts_arm;
+
+USE FROM Associative_draughting_elements_arm; -- ISO/TS 10303-1311
+USE FROM Draughting_annotation_arm; -- ISO/TS 10303-1206
+USE FROM Draughting_element_specialisations_arm; -- ISO/TS 10303-1312
+USE FROM Geometric_tolerance_arm; -- ISO/TS 10303-1051
+
+  TYPE datc_draughting_model_item_definition = EXTENSIBLE GENERIC_ENTITY SELECT BASED_ON draughting_model_item_definition WITH (
+    Dimensional_location,
+    Dimensional_size,
+    Geometric_tolerance);
+  END_TYPE; 
+
+  ENTITY Associated_dimension_text
+    SUBTYPE OF (Dimension_text);
+      is_displaying : Geometric_dimension;
+  END_ENTITY;
+
+  ENTITY Dimension_curve_terminator_to_projection_curve_associativity
+    SUBTYPE OF(Annotation_occurrence_associativity);
+      SELF\Annotation_occurrence_associativity.relating_element : Dimension_curve_terminator;
+      SELF\Annotation_occurrence_associativity.related_element  : Projection_curve;
+  END_ENTITY;
+  
+END_SCHEMA;
