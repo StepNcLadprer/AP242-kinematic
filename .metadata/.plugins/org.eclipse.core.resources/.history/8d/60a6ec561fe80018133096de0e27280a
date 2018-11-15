@@ -1,0 +1,112 @@
+package com.unb.StepFileManager.dto;
+import java.io.*;
+
+import jsdai.lang.*;
+import jsdai.dictionary.*;
+import jsdai.SAp242_managed_model_based_3d_engineering_mim_lf.*;
+import jsdai.lang.*;
+
+
+
+public class FileGeneratorAp242 {
+
+/**
+ * Estructura de programa para generación de un Archivo ap242 en p21
+ * 
+ * @param 
+ * @throws SdaiException
+ * @author cristhian R
+ */
+	
+	static SdaiRepository repository;
+	static SdaiTransaction transaction;
+	static SdaiModel model;
+	static SdaiSession session;	
+	
+	public static final void main(String[] args) throws jsdai.lang.SdaiException {
+		
+//		java.util.Properties prop =new java.util.Properties();
+//		//prop.setProperty("repositories","Repository_00");		
+//		prop.setProperty("repositories", "Repositories.tmp");		
+//		SdaiSession.setSessionProperties(prop);
+//		session = SdaiSession.openSession();
+//		transaction = session.startTransactionReadOnlyAccess();
+//		session =SdaiSession.openSession();
+//		transaction =session.startTransactionReadWriteAccess();	
+//		repository = session.importClearTextEncoding(null, "/home/cristhian/Dropbox/workspaceISys/JsdaiRepository/Entrada/ap242.stp", null);
+//		//repository = session.importClearTextEncoding(null, "/home/cristhian/Dropbox/workspaceISys/MyRepoISys/dictionarySeveral.stp", null);
+
+		System.out.println("USAGE: ap242 output_file");
+		// Antes de cualquier operación con SDAI debe abrirse y cerrarse una session
+		SdaiSession session = SdaiSession.openSession();  // 	Abrir session	
+		
+        Implementation imp = session.getSdaiImplementation();
+        
+        System.out.println("Comando "+ imp.getName());
+			
+			SdaiSession.setLogWriter(new PrintWriter(System.out, true));
+			
+			SdaiTransaction transaction = session.startTransactionReadWriteAccess(); 
+
+			SdaiRepository repo = session.createRepository("", null);
+		
+			repo.openRepository();
+		
+			A_string descriptions = repo.getDescription();
+			System.out.println("A_string descriptions"+  descriptions);
+			
+			descriptions.addByIndex(1, "Estructura de programa para generar un archivo p21 a partir de entidades ap242");
+			//Encoding information from the DATA session
+			A_string authors = repo.getAuthor();
+			authors.addByIndex(1, "Cristhian Riaño");
+			authors.addByIndex(2, "Camila Riaño");
+			A_string organizations = repo.getOrganization();
+			organizations.addByIndex(1, "Ladprer UnB");
+			repo.setOriginatingSystem(session.getSdaiImplementation().getName() + " " +
+			                           session.getSdaiImplementation().getLevel() );
+			repo.setAuthorization("lUIS Riaño");
+					
+					// Search for the SdaiModel, containing the dictionary data of AP242.
+					// Do not forget to include a line in jsdai.properties file, which informs 
+					// JSDAI that automotive design data dictionary model shall be created.
+					// The line may look like this:
+					// jsdai.SAutomotive_design=AUTOMOTIVE_DESIGN_CC1;AUTOMOTIVE_DESIGN_CC2
+	
+			SdaiModel dictionaryModel = null;
+			System.out.println("Paso 2: Cargando modelo ");
+					
+			System.out.println("Paso 2: Cargando modelo ");
+			String schemaName = "AP242_MANAGED_MODEL_BASED_3D_ENGINEERING_MIM_LF";
+	
+			SchemaInstance dictionaryData = session.getDataDictionary();
+				
+			System.out.println("dictionaryData <" + session.getDataDictionary() + "> found");	
+					
+			ASdaiModel dictionaryModels = dictionaryData.getAssociatedModels();
+			System.out.println("\n dictionaryModels <" + dictionaryData.getAssociatedModels() + "> found");
+			SdaiIterator iterator = dictionaryModels.createIterator();
+					
+					boolean modelFound = false;
+					
+					while (iterator.next()) {
+						dictionaryModel = dictionaryModels.getCurrentMember(iterator);
+						if (dictionaryModel.getName().equals(schemaName)) {
+							System.out.println("Model <" + dictionaryModel.getName() + "> found");
+							modelFound = true;
+							break;
+						}
+					}
+					if (!modelFound) {
+						System.out.println("There is no data dictionary model for AUTOMOTIVE_DESIGN schema.");
+						return;
+					}
+				
+			
+			
+			
+			transaction.endTransactionAccessAbort();
+		session.closeSession(); // Cerrar session
+
+	}
+
+}

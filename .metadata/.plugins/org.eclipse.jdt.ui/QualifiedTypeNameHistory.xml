@@ -1,2 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<qualifiedTypeNameHistroy/>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="jsdai.SAp242_managed_model_based_3d_engineering_mim_lf.SAp242_managed_model_based_3d_engineering_mim_lf"/>
+<fullyQualifiedTypeName name="jsdai.SAp242_managed_model_based_3d_engineering_mim_lf.ECc_design_specification_reference"/>
+<fullyQualifiedTypeName name="jsdai.SAp242_managed_model_based_3d_engineering_mim_lf.EMechanical_context"/>
+<fullyQualifiedTypeName name="java.util.Properties"/>
+<fullyQualifiedTypeName name="jsdai.SAutomotive_design.SAutomotive_design"/>
+<fullyQualifiedTypeName name="jsdai.SAp242_managed_model_based_3d_engineering_arm.SAp242_managed_model_based_3d_engineering_arm"/>
+</qualifiedTypeNameHistroy>

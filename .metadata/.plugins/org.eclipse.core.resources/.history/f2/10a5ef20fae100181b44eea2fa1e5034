@@ -1,5 +1,0 @@
-package com.unb.StepFileManager.dto;
-
-public class ImportExportStepFile {
-
-}

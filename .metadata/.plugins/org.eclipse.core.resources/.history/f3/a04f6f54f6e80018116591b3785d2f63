@@ -1,0 +1,39 @@
+package com.unb.StepFileManager.dto;
+import jsdai.lang.*; 
+
+import java.io.*;
+import jsdai.SAp242_managed_model_based_3d_engineering_mim_lf.*;
+import jsdai.SApplication_context_schema.AProduct_context;
+import jsdai.SApplication_context_schema.EProduct_context;
+import jsdai.SProduct_definition_schema.AProduct;
+import jsdai.SProduct_definition_schema.AProduct_definition_formation;
+import jsdai.SProduct_definition_schema.EProduct;
+import jsdai.SProduct_definition_schema.EProduct_definition_formation;
+import jsdai.SProduct_definition_schema.EProduct_definition_formation_with_specified_source;
+
+public class ReadAP242StepFile {
+	/**
+	 * JSDAI application program.
+	 * Reads an STEP (ap242) physical file, prints instances of product entity, 
+	 * finds and prints their users product_definition_formation_with_specified_source entity instances
+	 * @param args
+	 * @author Cristhian Riaño
+	 */	
+	static SdaiSession session;	
+	static SdaiTransaction trans;
+	static SdaiRepository repository;
+	static ASdaiModel models;
+	static SdaiIterator it_models;	
+	static SdaiModel model;
+	static AProduct products; //Agregaciones
+	static EProduct product; //interfaces
+	static SdaiIterator it_products;
+	static AProduct_context pc_set; 
+	static SdaiIterator it_pc;
+	static EProduct_context pc;
+	static AProduct_definition_formation formations;
+	static SdaiIterator iter_formations;
+	static EProduct_definition_formation formation;
+	static EProduct_definition_formation_with_specified_source fwss;
+
+}

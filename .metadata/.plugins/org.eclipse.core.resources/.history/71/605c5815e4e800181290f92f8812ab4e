@@ -1,0 +1,64 @@
+package com.unb.StepFileManager.dto;
+
+import jsdai.lang.*; 
+
+import java.io.*;
+
+import jsdai.SConfig_control_design.*;
+
+public class ReadAP203StepFile {
+	
+	/**
+	 * JSDAI application program.
+	 * Reads an STEP (ap203) physical file, prints instances of product entity, 
+	 * finds and prints their users product_definition_formation_with_specified_source entity instances
+	 * @param args
+	 * @author Cristhian
+	 */
+	static SdaiSession session;	
+	static SdaiTransaction trans;
+	static SdaiRepository repository;
+	static ASdaiModel models;
+	static SdaiIterator it_models;	
+	static SdaiModel model;
+
+	
+	
+	public static final void main(String[] args) throws jsdai.lang.SdaiException {
+				
+		System.out.println("Modulo para importar (AP203 para Java) y exportar (Java para 203) archivos STEP");
+		java.util.Properties prop =new java.util.Properties();
+		prop.setProperty("repositories", "Repositories.tmp");
+		//1. Crear Sesión antes de realizar cualquier operación.
+		SdaiSession.setLogWriter(new PrintWriter(System.out, true));
+		SdaiSession.setSessionProperties(prop);
+		session = SdaiSession.openSession();		
+		System.out.println("Sesión Iniciada: ");		
+		//2. Antes de utilizar, manipular o realizar cualquier operación es necesario realizar la lectura/escritura Como transacción.
+		trans = session.startTransactionReadOnlyAccess();		
+		//3. Acceder a los repositorios 		
+		repository = session.importClearTextEncoding(null, "/home/cristhian/Dropbox/workspaceISys/JsdaiRepository/Entrada/ap203.stp", null);
+		System.out.println("Cargando Archivo . . .");		
+		//4. Explorar la sesión DATA del Archivo y encontrar solo un modelo SdaiModel.
+		models = repository.getModels();
+		System.out.println("Cargando modelo de la sesión DATA ");		
+		it_models = models.createIterator();
+		
+		if(it_models.next()){
+			 model = models.getCurrentMember(it_models);
+			 System.out.println("Modelo cargado " + model);
+			 System.out.println("Model <" + model.getName() + "> found");
+		}
+		
+		
+		
+		
+		trans.endTransactionAccessAbort();// Transacción abortada para no almacenar las operaciones de manera persistente
+		// opción 2: trans.endTransactionAccessCommit();
+		session.closeSession(); // Cerrar session
+		
+		
+		
+	}
+
+}

@@ -1,7 +1,0 @@
-package com.unb.StepFileManager.dto0;
-import jsdai.lang.*; 
-import java.io.*;
-
-public class ImportExportStepFile {
-
-}

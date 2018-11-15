@@ -1,0 +1,3 @@
+repositories = .repositories.tmp
+jsdai.SAutomotive_design= AUTOMOTIVE_DESIGN
+jsdai.SAp242_managed_model_based_3d_engineering_mim_lf=Ap242_managed_model_based_3d_engineering_mim_lf

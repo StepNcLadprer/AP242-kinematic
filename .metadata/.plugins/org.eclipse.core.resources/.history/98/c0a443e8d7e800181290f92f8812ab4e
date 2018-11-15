@@ -1,0 +1,39 @@
+package com.unb.StepFileManager.dto;
+
+import jsdai.lang.*; 
+
+import java.io.*;
+import jsdai.SConfig_control_design.*;
+
+public class ReadAP203StepFile {
+	
+	/**
+	 * JSDAI application program.
+	 * Reads an STEP (ap203) physical file, prints instances of product entity, 
+	 * finds and prints their users product_definition_formation_with_specified_source entity instances
+	 * @param args
+	 * @author Cristhian
+	 */
+	
+	static SdaiRepository repository;
+	static SdaiTransaction transaction;
+	static SdaiModel model;
+	static SdaiSession session;		
+	
+	
+	public static final void main(String[] args) throws jsdai.lang.SdaiException {
+		
+		System.out.println("Modulo para importar (AP203 para Java) y exportar (Java para 203) archivos STEP");
+		//1. Crear Sesión antes de realizar cualquier operación. 
+		SdaiSession session = SdaiSession.openSession();
+		System.out.println("Sesión Iniciada: ");
+		
+		
+		
+		session.closeSession(); // Cerrar session
+		
+		
+		
+	}
+
+}

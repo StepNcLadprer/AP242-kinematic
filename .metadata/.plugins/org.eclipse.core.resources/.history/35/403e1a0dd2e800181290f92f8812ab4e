@@ -1,0 +1,139 @@
+package com.unb.StepFileManager.dto;
+
+import jsdai.lang.*; 
+import java.io.*;
+import jsdai.SProduct_definition_schema.*;
+import jsdai.SApplication_context_schema.*;
+import jsdai.SAp242_managed_model_based_3d_engineering_mim_lf.*;
+import jsdai.SAp203_configuration_controlled_3d_design_of_mechanical_parts_and_assemblies_arm.*;
+
+
+public class ReadStepFile {
+	
+	/**
+	 * JSDAI application program.
+	 * Reads an STEP (ap203) physical file, prints instances of product entity, 
+	 * finds and prints their users product_definition_formation_with_specified_source entity instances
+	 * @param args
+	 * @author Cristhian
+	 */
+	
+	public static final void main(String[] args) throws jsdai.lang.SdaiException {
+		
+		System.out.println("USAGE: java importExport input_file output_file");
+	
+		// Create properties 
+		java.util.Properties prop = new java.util.Properties();
+		
+		// Set working directory
+		prop.setProperty("repositories","Repository_00");
+				
+		// Set properties to SdaiSession		
+		SdaiSession.setSessionProperties(prop);
+
+			
+		SdaiSession.setLogWriter(new PrintWriter(System.out, true));	
+			
+		// 1. Open session		
+		SdaiSession session = SdaiSession.openSession();
+		
+		
+		//2. Start read/write  transaction
+			
+		SdaiTransaction trans = session.startTransactionReadWriteAccess();
+		
+		//3. Import a physical file into a new repository
+		
+		System.out.println("Opening file . . .");
+		
+		SdaiRepository repo = session.importClearTextEncoding(null, "/home/cristhian/Dropbox/workspaceISys/JsdaiRepository/Entrada/ap238.stp", null);
+		//Options:				
+		//ap203.stp
+		//ap214.stp
+		//ap238.stp
+		//ap242.stp
+				
+		//SdaiRepository is already open after importClearTextEncoding		
+		//repo.openRepository(); //-- already open after import
+		
+		//4. find the only one SdaiModel in it (data_section)
+		ASdaiModel models = repo.getModels();
+		System.out.println("Cargando modelo ");
+		
+		SdaiIterator it_models = models.createIterator();
+		if (it_models.next()) {
+			SdaiModel model = models.getCurrentMember(it_models);
+			System.out.println("Paso 2: Cargando modelo " + model);
+			// SdaiModel is already in read/write access after importClearTextEncoding
+			// model.startReadOnlyAccess();							
+			
+			System.out.println("Model <" + model.getName() + "> found");
+			
+			// find all instances of entity type "product"
+			AProduct products = (AProduct) model.getInstances(EProduct.class);
+			
+			// List all products(id, name, description)
+			System.out.println("");
+			System.out.println("Instances of entity \"product\": ");
+			SdaiIterator it_products = products.createIterator();
+			
+			while (it_products.next()) {
+				EProduct product = products.getCurrentMember(it_products);
+				System.out.println("");
+				System.out.println("INSTANCE: " + product.getPersistentLabel());
+				System.out.print("id: " + product.getId(null));
+				System.out.print(", name: " + product.getName(null));
+				System.out.println(", description: " + (product.testDescription(null) ? product.getDescription(null) : "$"));
+				
+				// List the discipline types the product belongs to
+				AProduct_context pc_set = product.getFrame_of_reference(null);
+				System.out.println("\tframe_of_reference - SET of " + pc_set.getMemberCount() + ":");
+				SdaiIterator it_pc = pc_set.createIterator();
+				while (it_pc.next()) {
+					EProduct_context pc = pc_set.getCurrentMember(it_pc);
+					System.out.print("\tname: " + pc.getName(null));
+					System.out.println(", discipline_type: " + pc.getDiscipline_type(null));					
+				}
+				// follow the implicit inverse relation "of_product" to get
+				//  all product_definition_formations of the product
+				
+				AProduct_definition_formation formations = new AProduct_definition_formation();
+				CProduct_definition_formation.usedinOf_product(null, product, null, formations);
+				
+				// List all product_definition_formations of the product
+				SdaiIterator iter_formations =  formations.createIterator();
+				while (iter_formations.next()) {
+					EProduct_definition_formation formation = (EProduct_definition_formation)formations.getCurrentMember(iter_formations);
+					System.out.println("product user: product_definition_formation instance " + formation.getPersistentLabel());
+					System.out.print("\tID: " + formation.getId(null));
+					System.out.print(", description: " + (formation.testDescription(null) ? formation.getDescription(null) : "$"));
+					
+					// mention the specified_source if available
+					if (formation.isKindOf(CProduct_definition_formation_with_specified_source.class)) {
+						EProduct_definition_formation_with_specified_source fwss = (EProduct_definition_formation_with_specified_source) formation;
+						System.out.println(", make_or_buy: " + fwss.getMake_or_buy(null));
+					}else {
+						System.out.println(", no specified_source available");
+					}					
+				}				
+			}
+			
+			// read/write access or read-only access to SdaiModel is ended with closeRepository()
+			// model.endReadWriteAccess();
+			// model.endReadOnlyAccess();
+			
+		} else {
+			System.out.println("error: No SdaiModel found");
+		}
+					
+		repo.exportClearTextEncoding("/home/cristhian/Dropbox/workspaceISys/JsdaiRepository/Saida/saida238.stp");
+		//trans.endTransactionAccessCommit();
+		trans.endTransactionAccessAbort();
+		repo.closeRepository();
+		repo.deleteRepository();
+	
+		System.out.println();
+		System.out.println("Done");
+		session.closeSession();
+	}	
+}

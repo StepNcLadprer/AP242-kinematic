@@ -1,0 +1,8 @@
+package com.unb.StepFileManager.dto;
+import jsdai.lang.*; 
+import java.io.*;
+import jsdai.SAp242_managed_model_based_3d_engineering_mim_lf.*;
+
+public class ReadAP242StepFile {
+
+}

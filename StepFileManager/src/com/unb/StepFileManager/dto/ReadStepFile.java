@@ -4,6 +4,10 @@ import jsdai.lang.*;
 import java.io.*;
 import jsdai.SProduct_definition_schema.*;
 import jsdai.SApplication_context_schema.*;
+import jsdai.SAp242_managed_model_based_3d_engineering_mim_lf.*;
+//import jsdai.SConfig_control_design.*; //Cambiar para Generar file AP203 conflicto con AP214
+//import jsdai.SAutomotive_design.*; // Cambiar para Geenrar file AP214 conflicto con AP203
+//import jsdai.SIntegrated_cnc_schema.*;
 
 
 public class ReadStepFile {
@@ -41,7 +45,7 @@ public class ReadStepFile {
 		SdaiTransaction trans = session.startTransactionReadWriteAccess();
 		
 		//3. Import a physical file into a new repository
-				
+		
 		System.out.println("Opening file . . .");
 		
 		SdaiRepository repo = session.importClearTextEncoding(null, "/home/cristhian/Dropbox/workspaceISys/JsdaiRepository/Entrada/ap242.stp", null);
@@ -56,11 +60,14 @@ public class ReadStepFile {
 		
 		//4. find the only one SdaiModel in it (data_section)
 		ASdaiModel models = repo.getModels();
+		System.out.println("Cargando modelo ");
+		
 		SdaiIterator it_models = models.createIterator();
 		if (it_models.next()) {
 			SdaiModel model = models.getCurrentMember(it_models);
+			System.out.println("Paso 2: Cargando modelo " + model);
 			// SdaiModel is already in read/write access after importClearTextEncoding
-			// model.startReadOnlyAccess();
+			//model.startReadOnlyAccess();							
 			
 			System.out.println("Model <" + model.getName() + "> found");
 			
@@ -112,6 +119,7 @@ public class ReadStepFile {
 					}					
 				}				
 			}
+			
 			// read/write access or read-only access to SdaiModel is ended with closeRepository()
 			// model.endReadWriteAccess();
 			// model.endReadOnlyAccess();
@@ -120,7 +128,7 @@ public class ReadStepFile {
 			System.out.println("error: No SdaiModel found");
 		}
 					
-		repo.exportClearTextEncoding("/home/cristhian/Dropbox/workspaceISys/JsdaiRepository/Saida/saida242.stp");
+		repo.exportClearTextEncoding("/home/cristhian/Dropbox/workspaceISys/JsdaiRepository/Saida/saida42.stp");
 		//trans.endTransactionAccessCommit();
 		trans.endTransactionAccessAbort();
 		repo.closeRepository();

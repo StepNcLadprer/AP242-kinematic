@@ -1,0 +1,16 @@
+package com.unb.StepFileManager.dto;
+import jsdai.lang.*; 
+import java.io.*;
+import jsdai.SAp242_managed_model_based_3d_engineering_mim_lf.*;
+
+public class ReadAP242StepFile {
+	/**
+	 * JSDAI application program.
+	 * Reads an STEP (ap242) physical file, prints instances of product entity, 
+	 * finds and prints their users product_definition_formation_with_specified_source entity instances
+	 * @param args
+	 * @author Cristhian Riaño
+	 */	
+	
+
+}

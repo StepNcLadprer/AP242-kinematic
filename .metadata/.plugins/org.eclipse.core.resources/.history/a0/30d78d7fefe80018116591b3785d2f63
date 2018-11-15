@@ -1,0 +1,138 @@
+package com.unb.StepFileManager.dto;
+
+import jsdai.lang.*; 
+import java.io.*;
+//import jsdai.dictionary.*;
+
+//import jsdai.SApplication_context_schema.AProduct_context;
+//import jsdai.SApplication_context_schema.EProduct_context;
+import jsdai.SConfig_control_design.*;
+//import jsdai.SProduct_definition_schema.AProduct;
+//import jsdai.SProduct_definition_schema.AProduct_definition_formation;
+//import jsdai.SProduct_definition_schema.CProduct_definition_formation;
+//import jsdai.SProduct_definition_schema.CProduct_definition_formation_with_specified_source;
+//import jsdai.SProduct_definition_schema.EProduct;
+//import jsdai.SProduct_definition_schema.EProduct_definition_formation;
+//import jsdai.SProduct_definition_schema.EProduct_definition_formation_with_specified_source;
+
+public class ReadAP203StepFile {
+	
+	/**
+	 * JSDAI application program.
+	 * Reads an STEP (ap203) physical file, prints instances of product entity, 
+	 * finds and prints their users product_definition_formation_with_specified_source entity instances
+	 * @param args
+	 * @author Cristhian
+	 */
+	static SdaiSession session;	
+	static SdaiTransaction trans;
+	static SdaiRepository repository;
+	static ASdaiModel models;
+	static SdaiIterator it_models;	
+	static SdaiModel model;
+	static AProduct products; //Agregaciones
+	static EProduct product; //interfaces
+	static SdaiIterator it_products;
+	static AProduct_context pc_set; 
+	static SdaiIterator it_pc;
+	static EProduct_context pc;
+	static AProduct_definition_formation formations;
+	static SdaiIterator iter_formations;
+	static EProduct_definition_formation formation;
+	static EProduct_definition_formation_with_specified_source fwss;
+	
+
+	
+	
+	public static final void main(String[] args) throws jsdai.lang.SdaiException {
+				
+		System.out.println("Modulo para importar (AP203 para Java) y exportar (Java para 203) archivos STEP");
+		java.util.Properties prop =new java.util.Properties();
+		prop.setProperty("repositories", "Repositories.tmp");
+		//1. Crear Sesión antes de realizar cualquier operación.
+		SdaiSession.setLogWriter(new PrintWriter(System.out, true));
+		SdaiSession.setSessionProperties(prop);
+		session = SdaiSession.openSession();		
+		System.out.println("1. Sesión Iniciada: ");		
+		//2. Antes de utilizar, manipular o realizar cualquier operación es necesario realizar la lectura/escritura Como transacción.
+		//trans = session.startTransactionReadOnlyAccess();
+		trans = session.startTransactionReadWriteAccess();
+		System.out.println("2. TRansacción Iniciada: ");
+		//3. Acceder a los repositorios 		
+		repository = session.importClearTextEncoding(null, "/home/cristhian/Dropbox/workspaceISys/JsdaiRepository/Entrada/ap203.stp", null);
+		System.out.println("3. Repositorio confiurado: ");
+		System.out.println("Cargando Archivo . . .");		
+		//4. Explorar la sesión DATA del Archivo y encontrar solo un modelo SdaiModel.
+		models = repository.getModels();
+		System.out.println("4. Cargando modelo de la sesión DATA ");		
+		it_models = models.createIterator();
+		
+		if(it_models.next()){
+			 model = models.getCurrentMember(it_models);
+			 System.out.println("Modelo cargado " + model);
+			 System.out.println("Model <" + model.getName() + "> found");
+			 // Encontrar todas las instacnicas de tipo "product"
+			 products = (AProduct) model.getInstances(EProduct.class);
+			 //Listamos todas las instancias de tipo  products(id, name, description)
+			 System.out.println("");
+			 System.out.println("Instancias de la entidad \"product\": ");
+			 it_products = products.createIterator();
+			 while (it_products.next()) {
+				 product = products.getCurrentMember(it_products);
+				 System.out.println("");
+				 System.out.println("INSTANCE: " + product.getPersistentLabel());
+				 System.out.print("id: " + product.getId(null));
+				 System.out.print(", name: " + product.getName(null));
+				 System.out.println(", description: " + (product.testDescription(null) ? product.getDescription(null) : "$"));
+				 // Listar los tipos de disciplina al que pertenece el producto
+				 pc_set = product.getFrame_of_reference(null);
+				 System.out.println("\tframe_of_reference - SET of " + pc_set.getMemberCount() + ":");
+				 it_pc = pc_set.createIterator();
+					while (it_pc.next()) {
+						pc = pc_set.getCurrentMember(it_pc);
+						System.out.print("\tname: " + pc.getName(null));
+						System.out.println(", discipline_type: " + pc.getDiscipline_type(null));					
+					}
+				 //Siga la relación inversa implícita "of_product" para obtener 
+				 //todas las product_definition_formations de el producto
+				 formations = new AProduct_definition_formation();	
+				 CProduct_definition_formation.usedinOf_product(null, product, null, formations); // Importante llamar las clases				 
+				// Lista todas las "product_definition_formations" del producto
+				iter_formations =  formations.createIterator();
+				while (iter_formations.next()) {
+					formation = (EProduct_definition_formation)formations.getCurrentMember(iter_formations);
+					System.out.println("product user: product_definition_formation instance " + formation.getPersistentLabel());
+					System.out.print("\tID: " + formation.getId(null));
+					System.out.print(", description: " + (formation.testDescription(null) ? formation.getDescription(null) : "$"));
+					// menciona la fuente especificada si esta disponible
+					if (formation.isKindOf(CProduct_definition_formation_with_specified_source.class)) { // Importante
+						fwss = (EProduct_definition_formation_with_specified_source) formation;
+						System.out.println(", make_or_buy: " + fwss.getMake_or_buy(null));
+					}else {
+						System.out.println(", no specified_source available");
+					}		
+						
+				}
+					
+			}
+				// read/write access or read-only access to SdaiModel is ended with closeRepository()
+				// model.endReadWriteAccess();
+				// model.endReadOnlyAccess();
+		} else {
+			System.out.println("error: No SdaiModel found");
+		}						
+		
+		trans.endTransactionAccessAbort();// Transacción abortada para no almacenar las operaciones de manera persistente
+		// opción 2: trans.endTransactionAccessCommit();
+		session.closeSession(); // Cerrar session			
+		repository.exportClearTextEncoding("/home/cristhian/Dropbox/workspaceISys/JsdaiRepository/Saida/saida238.stp");
+		//trans.endTransactionAccessCommit();
+		trans.endTransactionAccessAbort();
+		repository.closeRepository();
+		repository.deleteRepository();
+
+		System.out.println();
+		System.out.println("Done");
+		session.closeSession();
+}	
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="StepFileWizard">
+		<item value="/home/cristhian/Dropbox/workspaceISys/JsdaiRepository/Entrada/dictionarySeveral" key="stepFileExportSTEPPage1.STORE_LAST_NAME_ID"/>
+		<item value="/home/cristhian/Dropbox/workspaceISys/severalStepLibrary/severalStepLibrary.exd" key="repoFileExportSTEPPage1.STORE_LAST_NAME_ID"/>
+		<list key="stepFileExportSTEPPage1.STORE_NAMES_ID">
+			<item value="/home/cristhian/Dropbox/workspaceISys/JsdaiRepository/Entrada/dictionarySeveral"/>
+		</list>
+		<list key="repoFileExportSTEPPage1.STORE_NAMES_ID">
+			<item value="/home/cristhian/Dropbox/workspaceISys/severalStepLibrary/severalStepLibrary.exd"/>
+		</list>
+	</section>
+</section>

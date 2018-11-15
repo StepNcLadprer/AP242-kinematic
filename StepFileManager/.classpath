@@ -3,9 +3,18 @@
 	<classpathentry excluding="main/java/|test/java/" kind="src" path="src"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/test/java"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/OSGi%Minimum-1.2"/>
-	<classpathentry kind="var" path="JSDAI/jsdai_runtime.jar"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/OSGi%Minimum-1.2"/>
+	<classpathentry exported="true" kind="var" path="JSDAI/jsdai_runtime.jar"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="/severalStepLibrary/severalStepLibrary.jar"/>
 	<classpathentry kind="lib" path="/ap214StepLibrary/ap214StepLibrary.jar"/>
+	<classpathentry kind="lib" path="/ap201StepLibrary/ap201StepLibrary.jar"/>
+	<classpathentry kind="lib" path="/ap216StepLibrary/ap216StepLibrary.jar"/>
+	<classpathentry kind="lib" path="/ap218StepLibrary/ap218StepLibrary.jar"/>
+	<classpathentry kind="lib" path="/ap219StepLibrary/ap219StepLibrary.jar"/>
+	<classpathentry kind="lib" path="/ap221StepLibrary/ap221StepLibrary.jar"/>
+	<classpathentry kind="lib" path="/ap232StepLibrary/ap232StepLibrary.jar"/>
+	<classpathentry kind="lib" path="/ap235StepLibrary/ap235StepLibrary.jar"/>
+	<classpathentry kind="lib" path="/ap239StepLibrary/ap239StepLibrary.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
